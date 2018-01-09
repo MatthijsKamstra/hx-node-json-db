@@ -110,6 +110,29 @@ class JsonDB{
 		if (this.autosave) writeToFile(serverdata);
 	}
 
+	/**
+	 *  the key will be an array, value will be pushed into array
+	 *
+	 *  @param key 			key value used in DB
+	 *  @param value 		can be a string, a number/float/int, an object (JSON object), an array, a boolean, null
+	 */
+	public function push(key:String, value:Dynamic){
+		// trace('push(${key}, ${value})');
+		// trace( Type.typeof (value) );
+		// trace( Std.is(value, Array)  );
+		// trace( Reflect.isObject(value)  );
+		var temp = [];
+		if(Reflect.hasField(serverdata, key) ){
+			// trace('key exists');
+			temp = Reflect.getProperty(serverdata, key);
+			temp.push(value);
+		} else{
+			// trace('key DOESNT exists');
+			temp.push(value);
+			// Reflect.setField(serverdata, key, temp);
+		}
+		set(key, temp);
+	}
 
 	/**
 	 *  return the json data use as database

@@ -53,6 +53,19 @@ JsonDB.prototype = {
 			this.writeToFile(this.serverdata);
 		}
 	}
+	,push: function(key,value) {
+		console.log("push(" + key + ", " + Std.string(value) + ")");
+		console.log((value instanceof Array) && value.__enum__ == null);
+		console.log(Reflect.isObject(value));
+		var temp = [];
+		if(Object.prototype.hasOwnProperty.call(this.serverdata,key)) {
+			temp = Reflect.getProperty(this.serverdata,key);
+			temp.push(value);
+		} else {
+			temp.push(value);
+		}
+		this.set(key,temp);
+	}
 	,getData: function() {
 		return this.serverdata;
 	}
@@ -143,7 +156,10 @@ var Main = function() {
 	console.log(db.has("test0"));
 	db["delete"]("test0");
 	console.log(db.has("test0"));
-	db.startServer();
+	db.push("arr0",{ date : new Date()});
+	db.push("arr1",[1,2,3,4]);
+	db.push("arr2",true);
+	db.push("arr3","foo");
 };
 Main.__name__ = true;
 Main.main = function() {
@@ -189,6 +205,21 @@ Reflect.fields = function(o) {
 		}
 	}
 	return a;
+};
+Reflect.isObject = function(v) {
+	if(v == null) {
+		return false;
+	}
+	var t = typeof(v);
+	if(!(t == "string" || t == "object" && v.__enum__ == null)) {
+		if(t == "function") {
+			return (v.__name__ || v.__ename__) != null;
+		} else {
+			return false;
+		}
+	} else {
+		return true;
+	}
 };
 Reflect.deleteField = function(o,field) {
 	if(!Object.prototype.hasOwnProperty.call(o,field)) {
@@ -296,5 +327,6 @@ var js_node_Url = require("url");
 var js_node_buffer_Buffer = require("buffer").Buffer;
 String.__name__ = true;
 Array.__name__ = true;
+Date.__name__ = ["Date"];
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this);

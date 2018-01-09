@@ -37,7 +37,12 @@ class Main{
 		db.delete('test0');
 		trace(db.has('test0'));
 
-		db.startServer();
+		db.push('arr0', {date: Date.now()});
+		db.push('arr1' , [1,2,3,4]);
+		db.push('arr2' , true);
+		db.push('arr3' , 'foo');
+
+		// db.startServer();
 
 		// var db2 = new JsonDB('database2', false);
 		// db2.setData({test:'xxx', test2:4});
