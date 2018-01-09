@@ -18,13 +18,14 @@ class Main{
 	function new (){
 		var db = new JsonDB();
 		db.setData({
-			'name':"foo",
-			'number':1,
-			'float':1.1,
-			string:"foo",
-			array:[1,2,3],
-			bool:true,
-			obj:{one:1,two:2}
+			'name' : "foo",
+			'number' : 1,
+			'float' : 1.1,
+			string : "foo",
+			array : [1,2,3],
+			bool : true,
+			obj : {one : 1,two : 2},
+			date : Date.now()
 		});
 		trace(db.getData());
 		db.set('test0', "one");
@@ -41,6 +42,11 @@ class Main{
 		db.push('arr1' , [1,2,3,4]);
 		db.push('arr2' , true);
 		db.push('arr3' , 'foo');
+
+		trace('------------------------');
+		// [mck] next try
+		// db.push('step0/step1' , {date: Date.now()});
+		// db.push('zero/one/two/three' , {date: Date.now()});
 
 		// db.startServer();
 

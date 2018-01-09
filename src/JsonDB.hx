@@ -113,6 +113,11 @@ class JsonDB{
 	/**
 	 *  the key will be an array, value will be pushed into array
 	 *
+	 *  @example 			db.push('arr0', {date: Date.now()});
+	 *						db.push('arr1' , [1,2,3,4]);
+	 *						db.push('arr2' , true);
+	 *						db.push('arr3' , 'foo');
+	 *
 	 *  @param key 			key value used in DB
 	 *  @param value 		can be a string, a number/float/int, an object (JSON object), an array, a boolean, null
 	 */
@@ -121,21 +126,67 @@ class JsonDB{
 		// trace( Type.typeof (value) );
 		// trace( Std.is(value, Array)  );
 		// trace( Reflect.isObject(value)  );
+
 		var temp = [];
+
+		/*
+		var arr = key.split('/');
+		if(arr.length > 1){
+			trace('need to do something');
+
+			var obj = {};
+			// temp.push(arr[arr.length-1]);
+			temp.push(value);
+
+			Reflect.setField(obj, arr[arr.length-1], temp);
+
+			trace(obj);
+
+			var obj2={};
+
+			Reflect.setField(obj2, 'step0', obj);
+
+			trace(obj2);
+
+			// "zero" : {
+			// 	"one" : {
+			// 		"two" : {
+			// 			"three" : [
+			// 				{ date: 2018-01-09T21:13:20.038Z },
+			// 				{ date: 2018-01-09T21:13:20.038Z }
+			// 			]
+			// 		}
+			// 	}
+			// }
+
+			// var tempO = {};
+			// trace('>>>>>>>>>>>>>>>');
+			// for ( i in 1 ... arr.length ) {
+			// 	// your code
+			// 	trace(arr[arr.length - i]);
+			// 	// trace(arr[i]);
+			// 	Reflect.setField(tempO, arr[arr.length - i], obj});
+			// }
+			// trace('<<<<<<<<<<<<<<');
+			// Reflect.setField(obj, key, value);
+		}
+		*/
+
 		if(Reflect.hasField(serverdata, key) ){
 			// trace('key exists');
 			temp = Reflect.getProperty(serverdata, key);
-			temp.push(value);
-		} else{
+		// } else {
 			// trace('key DOESNT exists');
-			temp.push(value);
+			// temp.push(value);
 			// Reflect.setField(serverdata, key, temp);
 		}
+		temp.push(value);
 		set(key, temp);
 	}
 
 	/**
 	 *  return the json data use as database
+	 *
 	 *  @return Dynamic		the db
 	 */
 	public function getData():Dynamic{
@@ -157,6 +208,7 @@ class JsonDB{
 		// parse object to json string
 		writeToFile(haxe.Json.parse(haxe.Json.stringify(this.serverdata)));
 	}
+
 
 	// ____________________________________ private ____________________________________
 

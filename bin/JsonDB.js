@@ -54,16 +54,11 @@ JsonDB.prototype = {
 		}
 	}
 	,push: function(key,value) {
-		console.log("push(" + key + ", " + Std.string(value) + ")");
-		console.log((value instanceof Array) && value.__enum__ == null);
-		console.log(Reflect.isObject(value));
 		var temp = [];
 		if(Object.prototype.hasOwnProperty.call(this.serverdata,key)) {
 			temp = Reflect.getProperty(this.serverdata,key);
-			temp.push(value);
-		} else {
-			temp.push(value);
 		}
+		temp.push(value);
 		this.set(key,temp);
 	}
 	,getData: function() {
@@ -145,7 +140,7 @@ JsonDB.prototype = {
 };
 var Main = function() {
 	var db = new JsonDB();
-	db.setData({ "name" : "foo", "number" : 1, "float" : 1.1, string : "foo", array : [1,2,3], bool : true, obj : { one : 1, two : 2}});
+	db.setData({ "name" : "foo", "number" : 1, "float" : 1.1, string : "foo", array : [1,2,3], bool : true, obj : { one : 1, two : 2}, date : new Date()});
 	console.log(db.getData());
 	db.set("test0","one");
 	db.set("test1",2);
@@ -160,6 +155,7 @@ var Main = function() {
 	db.push("arr1",[1,2,3,4]);
 	db.push("arr2",true);
 	db.push("arr3","foo");
+	console.log("------------------------");
 };
 Main.__name__ = true;
 Main.main = function() {
@@ -205,21 +201,6 @@ Reflect.fields = function(o) {
 		}
 	}
 	return a;
-};
-Reflect.isObject = function(v) {
-	if(v == null) {
-		return false;
-	}
-	var t = typeof(v);
-	if(!(t == "string" || t == "object" && v.__enum__ == null)) {
-		if(t == "function") {
-			return (v.__name__ || v.__ename__) != null;
-		} else {
-			return false;
-		}
-	} else {
-		return true;
-	}
 };
 Reflect.deleteField = function(o,field) {
 	if(!Object.prototype.hasOwnProperty.call(o,field)) {
