@@ -4,6 +4,7 @@
 -main Main
 -js bin/JsonDB.js
 # -dce full
+-debug
 
 -cmd cd bin
 -cmd node JsonDB.js

@@ -40,12 +40,26 @@ JsonDB.prototype = {
 		if(this.autosave) {
 			this.writeToFile(this.serverdata);
 		}
+		return this.serverdata;
+	}
+	,_set: function(data,key,value) {
+		data[key] = value;
+		if(this.autosave) {
+			this.writeToFile(data);
+		}
+		return data;
 	}
 	,get: function(key) {
 		return Reflect.getProperty(this.serverdata,key);
 	}
+	,_get: function(data,key) {
+		return Reflect.getProperty(data,key);
+	}
 	,has: function(key) {
 		return Object.prototype.hasOwnProperty.call(this.serverdata,key);
+	}
+	,_has: function(data,key) {
+		return Object.prototype.hasOwnProperty.call(data,key);
 	}
 	,'delete': function(key) {
 		Reflect.deleteField(this.serverdata,key);
@@ -54,12 +68,44 @@ JsonDB.prototype = {
 		}
 	}
 	,push: function(key,value) {
-		var temp = [];
-		if(Object.prototype.hasOwnProperty.call(this.serverdata,key)) {
-			temp = Reflect.getProperty(this.serverdata,key);
+		var pathArray = key.split("/");
+		var storeArray = [];
+		if(pathArray.length > 1) {
+			var obj = this.serverdata;
+			var _g1 = 0;
+			var _g = pathArray.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				console.log(i == pathArray.length - 1);
+				var _pathArray = pathArray[i];
+				if(this._has(obj,_pathArray)) {
+					console.log("yes, key: \"" + _pathArray + "\" exists");
+					obj = this._get(obj,_pathArray);
+				} else {
+					console.log("no, key: \"" + _pathArray + "\" doesn't exists");
+				}
+				console.log(obj);
+			}
+			var test = [];
+			test.push(value);
+			var parentObj = { };
+			parentObj[pathArray[pathArray.length - 1]] = test;
+			var _g11 = 1;
+			var _g2 = pathArray.length - 1;
+			while(_g11 < _g2) {
+				var i1 = _g11++;
+				var obj2 = { };
+				obj2[pathArray[pathArray.length - 1 - i1]] = parentObj;
+				parentObj = obj2;
+			}
+			this.set(pathArray[0],parentObj);
+			return;
 		}
-		temp.push(value);
-		this.set(key,temp);
+		if(Object.prototype.hasOwnProperty.call(this.serverdata,key)) {
+			storeArray = Reflect.getProperty(this.serverdata,key);
+		}
+		storeArray.push(value);
+		this.set(key,storeArray);
 	}
 	,getData: function() {
 		return this.serverdata;
@@ -311,3 +357,5 @@ Array.__name__ = true;
 Date.__name__ = ["Date"];
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this);
+
+//# sourceMappingURL=JsonDB.js.map

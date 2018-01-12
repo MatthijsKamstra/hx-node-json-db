@@ -64,14 +64,21 @@ class JsonDB{
 	/**
 	 *  set a key into the database, it will overwrite existing value
 	 *
-	 *  @example 		db.set('test2', [1,2,3]);
+	 *  @example 			db.set('test2', [1,2,3]);
 	 *
-	 *  @param key 		key value used in DB
-	 *  @param value 	can be a string, a number/float/int, an object (JSON object), an array, a boolean, null
+	 *  @param key 			key value used in DB
+	 *  @param value 		can be a string, a number/float/int, an object (JSON object), an array, a boolean, null
+	 *  @return Dynamic		the db
 	 */
-	public function set(key:String, value:Dynamic){
+	public function set(key:String, value:Dynamic):Dynamic{
 		Reflect.setField(serverdata, key, value);
 		if (this.autosave) writeToFile(serverdata);
+		return serverdata;
+	}
+	private function _set(data:Dynamic, key:String, value:Dynamic):Dynamic{
+		Reflect.setField(data, key, value);
+		if (this.autosave) writeToFile(data);
+		return data;
 	}
 
 	/**
@@ -85,6 +92,9 @@ class JsonDB{
 	public function get(key:String):Dynamic{
 		return Reflect.getProperty(serverdata, key);
 	}
+	private function _get(data:Dynamic, key:String):Dynamic{
+		return Reflect.getProperty(data, key);
+	}
 
 	/**
 	 *  check if a key value is in the database
@@ -96,6 +106,9 @@ class JsonDB{
 	 */
 	public function has(key:String):Bool{
 		return Reflect.hasField(serverdata, key);
+	}
+	private function _has(data:Dynamic, key:String):Bool{
+		return Reflect.hasField(data, key);
 	}
 
 	/**
@@ -122,66 +135,85 @@ class JsonDB{
 	 *  @param value 		can be a string, a number/float/int, an object (JSON object), an array, a boolean, null
 	 */
 	public function push(key:String, value:Dynamic){
-		// trace('push(${key}, ${value})');
-		// trace( Type.typeof (value) );
-		// trace( Std.is(value, Array)  );
-		// trace( Reflect.isObject(value)  );
+		// remove empty path '/aap/'
+		var pathArray = key.split('/');
+		var storeArray = [];
 
-		var temp = [];
 
-		/*
-		var arr = key.split('/');
-		if(arr.length > 1){
-			trace('need to do something');
 
-			var obj = {};
-			// temp.push(arr[arr.length-1]);
-			temp.push(value);
+// 		var test = Reflect.getProperty(serverdata, key.split('/').join('.'));
+// 		trace(test);
 
-			Reflect.setField(obj, arr[arr.length-1], temp);
 
-			trace(obj);
+// 		trace(Reflect.getProperty(serverdata, 'zero.one.two.threes'));
+// 		trace(Reflect.getProperty(serverdata, 'zero/one/two/threes'));
 
-			var obj2={};
 
-			Reflect.setField(obj2, 'step0', obj);
+// return;
 
-			trace(obj2);
+		// [mck] currently overwrites
+		if(pathArray.length > 1){
+			var obj = serverdata;
+			for (i in 0...pathArray.length){
+				trace(i == pathArray.length-1);
+				var _pathArray = pathArray[i];
+				if (_has(obj, _pathArray)){
+					trace('yes, key: "${_pathArray}" exists');
+					obj = _get(obj, _pathArray);
 
-			// "zero" : {
-			// 	"one" : {
-			// 		"two" : {
-			// 			"three" : [
-			// 				{ date: 2018-01-09T21:13:20.038Z },
-			// 				{ date: 2018-01-09T21:13:20.038Z }
-			// 			]
-			// 		}
-			// 	}
-			// }
 
-			// var tempO = {};
-			// trace('>>>>>>>>>>>>>>>');
-			// for ( i in 1 ... arr.length ) {
-			// 	// your code
-			// 	trace(arr[arr.length - i]);
-			// 	// trace(arr[i]);
-			// 	Reflect.setField(tempO, arr[arr.length - i], obj});
-			// }
-			// trace('<<<<<<<<<<<<<<');
-			// Reflect.setField(obj, key, value);
+				} else {
+					trace('no, key: "${_pathArray}" doesn\'t exists');
+					// obj = _set(obj, _pathArray, {});
+					// obj = obj;
+				}
+				// try{
+				// 	trace(obj.length());
+				// } catch(e:Dynamic){
+					trace(obj);
+				// }
+			}
+
+			// var tt = new Array();
+			// 	trace(tt.push(obj));
+			// 	trace('tt = '+tt);
+			// var tt:Array<Dynamic> = obj;
+			// tt.push(value);
+			// new Array(obj).push
+
+			// return ;
+
+
+			// there is an path!
+			var test = [];
+			test.push(value);
+
+			var parentObj = {};
+			Reflect.setField(parentObj, pathArray[pathArray.length-1], test);
+			for (i in 1...pathArray.length -1){
+				// trace('parentObj: '+parentObj);
+				var obj2={};
+				Reflect.setField(obj2, pathArray[(pathArray.length - 1) - i], parentObj);
+				// trace('obj2: '+obj2);
+				parentObj = obj2;
+			}
+
+			set(pathArray[0], parentObj);
+			return;
+			trace(parentObj);
 		}
-		*/
+
 
 		if(Reflect.hasField(serverdata, key) ){
 			// trace('key exists');
-			temp = Reflect.getProperty(serverdata, key);
+			storeArray = Reflect.getProperty(serverdata, key);
 		// } else {
 			// trace('key DOESNT exists');
-			// temp.push(value);
-			// Reflect.setField(serverdata, key, temp);
+			// storeArray.push(value);
+			// Reflect.setField(serverdata, key, storeArray);
 		}
-		temp.push(value);
-		set(key, temp);
+		storeArray.push(value);
+		set(key, storeArray);
 	}
 
 	/**

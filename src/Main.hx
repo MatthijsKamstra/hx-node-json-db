@@ -28,6 +28,7 @@ class Main{
 			date : Date.now()
 		});
 		trace(db.getData());
+
 		db.set('test0', "one");
 		db.set('test1', 2);
 		db.set('test2', [1,2,3]);
@@ -43,8 +44,10 @@ class Main{
 		db.push('arr2' , true);
 		db.push('arr3' , 'foo');
 
+
 		trace('------------------------');
 		// [mck] next try
+		// db.push('zep0' , {date: Date.now()});
 		// db.push('step0/step1' , {date: Date.now()});
 		// db.push('zero/one/two/three' , {date: Date.now()});
 
